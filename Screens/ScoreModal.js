@@ -38,11 +38,7 @@ const ScoreModal = ({
           }}
           className=" bg-background justify-center items-center rounded-xl"
         >
-          <Text
-            onPress={() => closeModal()}
-            style={styles.text}
-            className="text-primary"
-          >
+          <Text style={styles.text} className="text-primary">
             {data.correct > Math.floor(data.limit / 2)
               ? "CONGRATS!"
               : "EEWWW! "}
@@ -56,7 +52,10 @@ const ScoreModal = ({
           </Text>
 
           <View className="bg-text rounded-full h-56 w-56 p-10 my-5 justify-center items-center">
-            <Text style={styles.score}>
+            <Text
+              style={styles.score}
+              className={`${data.correct > 99 ? "text-4xl" : "text-5xl"}`}
+            >
               {data.correct}/{data.limit}
             </Text>
           </View>
@@ -94,7 +93,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   score: {
-    fontSize: 50,
     fontWeight: "900",
     color: "yellow",
   },

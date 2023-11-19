@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  BackHandler,
 } from "react-native";
 import element1 from "../pdfs/elements1";
 import Convert from "../MainContainer/Convert";
@@ -31,8 +32,11 @@ const MainScreen = ({ route, navigation }) => {
   const [text, setText] = react.useState(element1);
   const [showModal, setShowModal] = react.useState(false);
   const [currentNumber, setCurrentNumber] = react.useState(0);
+  const [wrongLimit, setWrongLimit] = react.useState(0);
 
   const SelectResponse = (correct) => {
+    if (data[1]?.response == false) {
+    }
     const random = Math.random();
     selected = "";
     if (correct == true) {
@@ -46,43 +50,54 @@ const MainScreen = ({ route, navigation }) => {
     }
   };
 
-  // const checkChoices = () => {
-  //   const len = quiz?.length;
-  //   for (let i = 0; i < len; i++) {
-  //     const item = quiz[i];
-  //     if (item?.Choices.length != 4) {
-  //       console.log(item.ID, ": ", item.Question);
-  //     }
-  //   }
-  // };
+  const handleBackButton = () => {
+    navigation.replace("Home");
+    return true;
+  };
+
+  const checkChoices = () => {
+    const len = quiz?.length;
+    for (let i = 0; i < len; i++) {
+      const item = quiz[i];
+      if (item?.Choices.length != 4) {
+        console.log(item.ID, ": ", item.Question);
+      }
+    }
+  };
 
   const handleSubmit = (label, answer) => {
     setClicked(label);
     if (label == answer) {
       setCorrect(correct + 1);
-      setColor("bg-primary text-text/70");
-      setResponse({ show: true, message: SelectResponse(true) });
+      setColor("bg-green-500 text-background");
+      data[1]?.response &&
+        setResponse({ show: true, message: SelectResponse(true) });
+      setDisabled(true);
+      setShowNext(true);
     } else {
+      setWrongLimit(wrongLimit + 1);
       setAnswer(answer);
       setColor(`bg-secondary/40 border-6 border-text text-text/70`);
-      setResponse({ show: true, message: SelectResponse(false) });
+      data[1]?.response &&
+        setResponse({ show: true, message: SelectResponse(false) });
+      setDisabled(true);
+      setShowNext(true);
+      data[1]?.hardMode && wrongLimit == 4 && setShowModal(true);
     }
-    setDisabled(true);
-    setShowNext(true);
   };
 
   const SelectRandomQuestion = () => {
     let selectedQuestion;
     if (data[1]?.random && quiz != null) {
       const numberSelected = data[2];
-      // do {
-      //   const random = Math.floor(Math.random() * quiz.length);
-      //   selectedQuestion = quiz[random];
-      // } while (finished.includes(selectedQuestion?.ID));
-      // setCurrent(selectedQuestion);
-      // setFinished([...finished, selectedQuestion?.ID]);
-      // setLoading(false);
-      setCurrent(quiz[numberSelected[currentNumber]]);
+      do {
+        const random = Math.floor(Math.random() * quiz.length);
+        selectedQuestion = quiz[random];
+      } while (finished.includes(selectedQuestion?.ID));
+      setCurrent(selectedQuestion);
+      setFinished([...finished, selectedQuestion?.ID]);
+      setLoading(false);
+      // setCurrent(numberSelected[currentNumber]);
     } else {
       setCurrent(quiz[currentNumber]);
       setLoading(false);
@@ -106,6 +121,7 @@ const MainScreen = ({ route, navigation }) => {
   };
 
   const refresh = () => {
+    setWrongLimit(0);
     setClicked(false);
     setDisabled(false);
     setCorrect(0);
@@ -114,6 +130,7 @@ const MainScreen = ({ route, navigation }) => {
     setFinished([]);
     setAnswer("");
     setAnswered(1);
+    setWrongLimit(0);
     data[1].random ? SelectRandomQuestion() : setCurrent(quiz[0]);
     setCurrentNumber(1);
   };
@@ -158,7 +175,12 @@ const MainScreen = ({ route, navigation }) => {
   react.useEffect(() => {
     setText(data[0]);
     setQuiz(text);
-    SelectRandomQuestion();
+    setFinished(data);
+
+    BackHandler.addEventListener("hardwareBackPress", handleBackButton);
+    return () => {
+      BackHandler.removeEventListener("hardwareBackPress", handleBackButton);
+    };
   }, []);
 
   react.useEffect(() => {
@@ -172,17 +194,44 @@ const MainScreen = ({ route, navigation }) => {
   return (
     <View className="bg-background h-full w-full items-center justify-center pt-10 px-4">
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View className="flex-row justify-between items-center">
-          <Text
-            className="text-3xl text-primary/70 font-bold"
-            onPress={() => console.log(data[2])}
-          >
-            Elements na malupet #{data[2].id}
-          </Text>
-          <TouchableOpacity onPress={() => refresh()}>
-            <Icons name="refresh-outline" size={40} color={"#e46767"} />
-          </TouchableOpacity>
-        </View>
+        {!data[1].hardMode ? (
+          <View className="flex-row justify-between items-center">
+            <Text className="text-2xl text-primary/70 font-bold">
+              Elements na malupet #{data[1]?.id}
+            </Text>
+            <TouchableOpacity onPress={() => refresh()}>
+              <Icons name="refresh-outline" size={40} color={"#e46767"} />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View className="w-full flex-row justify-evenly ">
+            <View
+              className={`h-4 w-12  ${
+                wrongLimit >= 5 ? "bg-none" : "bg-primary/70"
+              } border-spacing-2 border-2 border-black rounded-full`}
+            />
+            <View
+              className={`h-4 w-12  ${
+                wrongLimit >= 4 ? "bg-none" : "bg-primary/70"
+              } border-spacing-2 border-2 border-black rounded-full`}
+            />
+            <View
+              className={`h-4 w-12  ${
+                wrongLimit >= 3 ? "bg-none" : "bg-primary/70"
+              } border-spacing-2 border-2 border-black rounded-full`}
+            />
+            <View
+              className={`h-4 w-12  ${
+                wrongLimit >= 2 ? "bg-none" : "bg-primary/70"
+              } border-spacing-2 border-2 border-black rounded-full`}
+            />
+            <View
+              className={`h-4 w-12  ${
+                wrongLimit >= 1 ? "bg-none" : "bg-primary/70"
+              } border-spacing-2 border-2 border-black rounded-full`}
+            />
+          </View>
+        )}
 
         {!loading && (
           <View>
@@ -196,9 +245,11 @@ const MainScreen = ({ route, navigation }) => {
                 <Text className="text-primary text-xl italic font-semibold mb-4">
                   {answered} - {data[1].limit}
                 </Text>
-                <Text className="text-primary text-xl italic font-semibold mb-4">
-                  Correct: {correct} / {data[1].limit}
-                </Text>
+                {!data[1].hardMode && (
+                  <Text className="text-primary text-xl italic font-semibold mb-4">
+                    Correct: {correct} / {data[1].limit}
+                  </Text>
+                )}
               </View>
               <Text className="text-2xl text-text/60 font-bold">
                 {current?.Question}
@@ -226,7 +277,7 @@ const MainScreen = ({ route, navigation }) => {
                         item.Label == clicked
                           ? color
                           : answer == item.Label
-                          ? "border-4 border-primary bg-secondary text-primary"
+                          ? "border-4 border-accent bg-secondary text-accent"
                           : "bg-secondary text-text/70"
                       } my-2 rounded-3xl `}
                     >
@@ -265,7 +316,6 @@ const MainScreen = ({ route, navigation }) => {
           </TouchableOpacity>
         )}
       </ScrollView>
-      <StatusBar hidden={true} />
       <ScoreModal
         showModal={showModal}
         setShowModal={setShowModal}
@@ -274,6 +324,7 @@ const MainScreen = ({ route, navigation }) => {
         navigation={navigation}
         data={{ correct: correct, limit: data[1].limit }}
       />
+      <StatusBar hidden={true} />
     </View>
   );
 };
