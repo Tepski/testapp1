@@ -8,15 +8,18 @@ import {
   StatusBar as SB,
   Platform,
   Switch,
+  Dimensions,
 } from "react-native";
 import Icons from "react-native-vector-icons/Ionicons";
 import Convert from "../MainContainer/Convert";
 import Slider from "@react-native-community/slider";
 
-import elements1 from "../pdfs/elements13";
-import elements2 from "../pdfs/elements14";
-import elements3 from "../pdfs/elements15";
-import elements4 from "../pdfs/elements16";
+import elements1 from "../pdfs/elements17";
+import elements2 from "../pdfs/elements18";
+import elements3 from "../pdfs/elements19";
+import elements4 from "../pdfs/elements20";
+
+const DIMENSION = Dimensions.get("screen");
 
 const HomeScreen = ({ navigation }) => {
   const defaultValue = {
@@ -33,6 +36,7 @@ const HomeScreen = ({ navigation }) => {
   const [sliderValue, setSliderValue] = react.useState(100);
   const [itemLen, setItemLen] = react.useState(null);
   const [randomQuiz, setRandomQuiz] = react.useState([]);
+  const [showNext, setShowNext] = react.useState(false);
 
   const handleSelect = (index, item) => {
     options.random && selectRandom(options.limit);
@@ -41,6 +45,7 @@ const HomeScreen = ({ navigation }) => {
     setItemLen(JSON.parse(Convert(item)).length);
     setSliderValue(defaultValue.limit);
     setOptions({ ...options, limit: 100, id: index + 1 });
+    setShowNext(true);
   };
 
   const selectRandom = (limit) => {
@@ -92,54 +97,54 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <View
-      style={{ paddingTop: Platform.OS == "android" ? SB.currentHeight : 0 }}
-      className="flex-1 px-4 justify-start items-center py-4 bg-background"
+      style={styles.container}
+      tw="px-4 justify-start items-center py-4 bg-background"
     >
       <Text
-        className="text-3xl text-text my-4 font-semibold"
+        tw="text-3xl text-text my-4 font-semibold text-primary"
         // onPress={() => navigation.navigate("Admin")}
       >
-        MDSP WEEK 10 ELEMENTS
+        ES ELEMENTS
       </Text>
 
       {elements?.map((item, index) => {
         return (
-          <View className="w-full" key={index}>
+          <View tw="w-full" key={index}>
             <TouchableOpacity
               disabled={number == index && true}
               activeOpacity={0.7}
               // onPress={() => navigation.navigate("Main", { selectedQuiz: item })}
               onPress={() => handleSelect(index, item)}
-              className="w-full"
+              tw="w-full"
             >
               <View
                 style={styles.selection}
-                className={index == number && "border-accent/80 border-2 "}
+                tw={index == number && "border-accent/80 border-2 "}
               >
-                <View className="flex-row justify-between items-center w-full">
+                <View tw="flex-row justify-between items-center w-full">
                   <View
                     style={{ flexDirection: "row", alignItems: "flex-start" }}
                   >
-                    <View className="justify-center items-center rounded-lg border-2 p-4 mr-2 bg-secondary">
-                      <Text className="text-3xl font-bold italic text-text">
+                    <View tw="justify-center items-center rounded-lg border-2 p-4 mr-2 bg-secondary">
+                      <Text tw="text-3xl font-bold italic text-text">
                         {index + 1}
                       </Text>
                     </View>
-                    <View className="justify-start ml-2">
-                      <Text className="text-xl text-text font-semibold">
+                    <View tw="justify-start ml-2">
+                      <Text tw="text-xl text-text font-semibold">
                         ELEMENTS #{index + 1}
                       </Text>
-                      <Text className="italic text-text/70 text-lg">MDSP</Text>
+                      <Text tw="italic text-text/70 text-lg">MDSP</Text>
                     </View>
                   </View>
                 </View>
                 {number == index && (
                   <View
                     style={{ elevation: 5, zIndex: 1 }}
-                    className="bg-secondary border-2 border-accent p-4 rounded-lg justify-start items-start w-full mt-4"
+                    tw="bg-secondary border-2 border-accent p-4 rounded-lg justify-start items-start w-full mt-4"
                   >
-                    <View className="flex-row items-center justify-between w-full mb-2">
-                      <Text className="text-xl font-semibold">Hard Mode</Text>
+                    <View tw="flex-row items-center justify-between w-full mb-2">
+                      <Text tw="text-xl font-semibold">Hard Mode</Text>
                       {/* <Switch
                         thumbColor={"#c72323"}
                         trackColor={"white"}
@@ -163,11 +168,9 @@ const HomeScreen = ({ navigation }) => {
                       />
                     </View>
                     {!options.hardMode && (
-                      <View className="w-full">
-                        <View className="flex-row items-center justify-between w-full">
-                          <Text className="text-xl font-semibold">
-                            Randomize
-                          </Text>
+                      <View tw="w-full">
+                        <View tw="flex-row items-center justify-between w-full">
+                          <Text tw="text-xl font-semibold">Randomize</Text>
                           <Switch
                             thumbColor={"#c72323"}
                             trackColor={"white"}
@@ -180,10 +183,8 @@ const HomeScreen = ({ navigation }) => {
                             }
                           />
                         </View>
-                        <View className="flex-row items-center justify-between w-full">
-                          <Text className="text-xl font-semibold">
-                            Response
-                          </Text>
+                        <View tw="flex-row items-center justify-between w-full">
+                          <Text tw="text-xl font-semibold">Response</Text>
                           <Switch
                             thumbColor={"#c72323"}
                             trackColor={"white"}
@@ -196,20 +197,23 @@ const HomeScreen = ({ navigation }) => {
                             }
                           />
                         </View>
-                        <View className="w-full">
-                          <Text className="text-xl font-semibold ">
+                        <View tw="w-full">
+                          <Text tw="text-xl font-semibold ">
                             Set Limit: {options.limit}
                           </Text>
-                          <View className="bg-black/10 p-2 rounded-xl mt-2">
+                          <View tw="bg-black/10 p-2 rounded-xl mt-2">
                             <Slider
                               step={1}
                               value={sliderValue}
-                              minimumValue={1}
+                              minimumValue={5}
                               maximumValue={itemLen}
                               minimumTrackTintColor="#e46767"
                               thumbTintColor="#c72323"
                               onValueChange={(e) =>
                                 setOptions({ ...options, limit: e })
+                              }
+                              onTouchEnd={() =>
+                                options.random && selectRandom(options.limit)
                               }
                             />
                           </View>
@@ -224,13 +228,15 @@ const HomeScreen = ({ navigation }) => {
         );
       })}
 
-      <TouchableOpacity
-        activeOpacity={0.7}
-        style={styles.goBtn}
-        onPress={() => handleSubmit()}
-      >
-        <Icons name="arrow-forward-outline" size={35} color={"#dcf9f9"} />
-      </TouchableOpacity>
+      {showNext && (
+        <TouchableOpacity
+          activeOpacity={0.7}
+          style={styles.goBtn}
+          onPress={() => handleSubmit()}
+        >
+          <Icons name="arrow-forward-outline" size={35} color={"#dcf9f9"} />
+        </TouchableOpacity>
+      )}
 
       <StatusBar hidden={true} />
     </View>
@@ -238,6 +244,11 @@ const HomeScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    paddingTop: Platform.OS == "android" ? SB.currentHeight : 0,
+    height: DIMENSION.height,
+    width: DIMENSION.width,
+  },
   selection: {
     elevation: 5,
     paddingVertical: 10,

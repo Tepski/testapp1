@@ -3,7 +3,7 @@ import { StatusBar } from "expo-status-bar";
 import {
   View,
   Text,
-  StyleSheet,
+  Dimensions,
   TouchableOpacity,
   ScrollView,
   BackHandler,
@@ -14,12 +14,14 @@ import responses from "../MainContainer/Response";
 import Icons from "react-native-vector-icons/Ionicons";
 import ScoreModal from "./ScoreModal";
 
+const DIMENSION = Dimensions.get("screen");
+
 const MainScreen = ({ route, navigation }) => {
   const { data } = route.params;
 
   const [quiz, setQuiz] = react.useState({});
   const [color, setColor] = react.useState("bg-secondary text-white");
-  const [clicked, setClicked] = react.useState(false);
+  const [clicked, setClicked] = react.useState(null);
   const [disabled, setDisabled] = react.useState(false);
   const [correct, setCorrect] = react.useState(0);
   const [showNext, setShowNext] = react.useState(false);
@@ -33,6 +35,7 @@ const MainScreen = ({ route, navigation }) => {
   const [showModal, setShowModal] = react.useState(false);
   const [currentNumber, setCurrentNumber] = react.useState(0);
   const [wrongLimit, setWrongLimit] = react.useState(0);
+  const [review, setReview] = react.useState([]);
 
   const SelectResponse = (correct) => {
     if (data[1]?.response == false) {
@@ -62,6 +65,9 @@ const MainScreen = ({ route, navigation }) => {
       if (item?.Choices.length != 4) {
         console.log(item.ID, ": ", item.Question);
       }
+      if (item?.Answer.length == 0) {
+        console.log("MAY MALI DITO", item.ID);
+      }
     }
   };
 
@@ -84,6 +90,7 @@ const MainScreen = ({ route, navigation }) => {
       setShowNext(true);
       data[1]?.hardMode && wrongLimit == 4 && setShowModal(true);
     }
+    setReview([...review, { answer: label, data: current }]);
   };
 
   const SelectRandomQuestion = () => {
@@ -91,11 +98,12 @@ const MainScreen = ({ route, navigation }) => {
     if (data[1]?.random && quiz != null) {
       const numberSelected = data[2];
       do {
-        const random = Math.floor(Math.random() * quiz.length);
-        selectedQuestion = quiz[random];
+        const random = Math.floor(Math.random() * data[2].length);
+        console.log(random);
+        selectedQuestion = data[2][random];
       } while (finished.includes(selectedQuestion?.ID));
+      clicked != null && setFinished([...finished, selectedQuestion?.ID]);
       setCurrent(selectedQuestion);
-      setFinished([...finished, selectedQuestion?.ID]);
       setLoading(false);
       // setCurrent(numberSelected[currentNumber]);
     } else {
@@ -112,22 +120,26 @@ const MainScreen = ({ route, navigation }) => {
       setClicked(false);
       setResponse({ show: false, message: "" });
       setShowNext(false);
-      SelectRandomQuestion();
+      SelectRandomQuestion(false);
       setAnswered(answered + 1);
       setAnswer("");
     } else {
-      setShowModal(!showModal);
+      setFinished([]);
+      setTimeout(() => setShowModal(!showModal), 500);
+      console.log(review);
     }
   };
 
   const refresh = () => {
     setWrongLimit(0);
-    setClicked(false);
+    setClicked(null);
+    setClicked(() => {
+      setFinished([]);
+    });
     setDisabled(false);
     setCorrect(0);
     setShowNext(false);
     setLoading(false);
-    setFinished([]);
     setAnswer("");
     setAnswered(1);
     setWrongLimit(0);
@@ -140,42 +152,10 @@ const MainScreen = ({ route, navigation }) => {
     navigation.replace("Home");
   };
 
-  // const storeData = async () => {
-  //   const object = {
-  //     clicked: false,
-  //     disabled: false,
-  //     correct: correct,
-  //     showNext: false,
-  //     finished: finished,
-  //     current: current,
-  //     currentNumber: currentNumber,
-  //   };
-  //   try {
-  //     await AsyncStorage.setItem(
-  //       `ELEMENT${data[1].id}`,
-  //       JSON.stringify(object)
-  //     );
-  //   } catch (error) {
-  //     console.error("ERROR!!!!", error);
-  //   }
-  // };
-
-  // const getData = async () => {
-  //   try {
-  //     const data = await AsyncStorage.getItem(`ELEMENT${data[1].id}`)
-  //     if (data != null) {
-  //       data = JSON.parse(data)
-
-  //     }
-  //   } catch (error) {
-  //     console.error("ERROR", error)
-  //   }
-  // }
-
   react.useEffect(() => {
     setText(data[0]);
     setQuiz(text);
-    setFinished(data);
+    // setFinished(data);
 
     BackHandler.addEventListener("hardwareBackPress", handleBackButton);
     return () => {
@@ -192,11 +172,17 @@ const MainScreen = ({ route, navigation }) => {
   }, [quiz]);
 
   return (
-    <View className="bg-background h-full w-full items-center justify-center pt-10 px-4">
+    <View
+      className="bg-background items-center justify-center pt-10 px-4"
+      style={{ height: DIMENSION.height, width: DIMENSION.width }}
+    >
       <ScrollView showsVerticalScrollIndicator={false}>
         {!data[1].hardMode ? (
           <View className="flex-row justify-between items-center">
-            <Text className="text-2xl text-primary/70 font-bold">
+            <Text
+              className="text-2xl text-primary/70 font-bold"
+              onPress={() => checkChoices()}
+            >
               Elements na malupet #{data[1]?.id}
             </Text>
             <TouchableOpacity onPress={() => refresh()}>
@@ -322,6 +308,7 @@ const MainScreen = ({ route, navigation }) => {
         closeModal={closeModal}
         refresh={refresh}
         navigation={navigation}
+        review={review}
         data={{ correct: correct, limit: data[1].limit }}
       />
       <StatusBar hidden={true} />
