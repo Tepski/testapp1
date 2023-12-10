@@ -3,7 +3,7 @@ import { useState, useRef } from "react";
 import { View, Text, Button, TouchableOpacity, ScrollView } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { collection, addDoc, getDocs } from "firebase/firestore";
-import { db } from "../MainContainer/firebase";
+import { db } from "../MainContainer/firebase-config";
 import ModalScreen from "./ModalScreen";
 import Convert from "../MainContainer/Convert";
 import Icons from "react-native-vector-icons/Ionicons";

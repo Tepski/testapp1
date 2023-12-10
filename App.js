@@ -9,6 +9,7 @@ const Stack = createNativeStackNavigator();
 import MainScreen from "./Screens/MainScreen";
 import HomeScreen from "./Screens/HomeScreen";
 import AdminScreen from "./Screens/AdminScreen";
+import HomeScreen2 from "./Screens/HomeScreen2";
 
 const App = () => {
   return (
@@ -24,7 +25,7 @@ const App = () => {
         />
         <Stack.Screen
           name="Home"
-          component={HomeScreen}
+          component={HomeScreen2}
           options={{ animation: "slide_from_left" }}
         />
         <Stack.Screen name="Admin" component={AdminScreen} />
