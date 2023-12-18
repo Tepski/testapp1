@@ -267,7 +267,7 @@ const MainScreen = ({ route, navigation }) => {
                           : "bg-secondary text-text/70"
                       } my-2 rounded-3xl `}
                     >
-                      {item.String}
+                      {item.Text}
                     </Text>
                   </TouchableOpacity>
                 );

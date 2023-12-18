@@ -10,6 +10,7 @@ import MainScreen from "./Screens/MainScreen";
 import HomeScreen from "./Screens/HomeScreen";
 import AdminScreen from "./Screens/AdminScreen";
 import HomeScreen2 from "./Screens/HomeScreen2";
+import MainScreen2 from "./Screens/MainScreen2";
 
 const App = () => {
   return (
@@ -20,8 +21,12 @@ const App = () => {
       >
         <Stack.Screen
           name="Main"
-          component={MainScreen}
-          options={{ animation: "slide_from_right" }}
+          component={MainScreen2}
+          options={{
+            animation: "slide_from_right",
+            headerShown: true,
+            headerTitle: false,
+          }}
         />
         <Stack.Screen
           name="Home"

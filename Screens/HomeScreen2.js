@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Dimensions,
   FlatList,
+  Animated,
   StatusBar as SB,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
@@ -22,7 +23,16 @@ const DevDim = Dimensions.get("screen");
 const HomeScreen2 = ({ navigation }) => {
   const [data, setData] = React.useState([]);
   const subs = ["MESL", "PIPE", "MDSP"];
-  const listref = React.useRef(null);
+  const TabBarRef = React.useRef(new Animated.Value(0)).current;
+  const listref = React.useRef();
+
+  const showTabBar = (value, duration) => {
+    Animated.timing(TabBarRef, {
+      duration: duration,
+      toValue: value,
+      useNativeDriver: false,
+    }).start();
+  };
 
   const getDocuments = async () => {
     const subslist = [];
@@ -38,58 +48,32 @@ const HomeScreen2 = ({ navigation }) => {
     setData(subslist);
   };
 
+  const checkChoices = () => {
+    const item = data[2][1].data[0];
+    const converted = Convert(item);
+    for (i in converted) {
+      const quesLen = converted[i].Choices;
+      quesLen.forEach((item) => item.Label == "" && console.log(converted[i]));
+    }
+  };
+
   const nav = (index) => {
     listref.current.scrollToIndex({ index: index });
+  };
+
+  const navigateToMain = (item) => {
+    navigation.navigate("Main", {
+      data: Convert(item),
+    });
   };
 
   React.useEffect(() => {
     getDocuments();
   }, []);
-  // return (
-  //   <View style={styles.container}>
-  //     {data && (
-  //       <ScrollView style={styles.scrollView} snapToAlignment="start">
-  //         {data.map((item, index) => {
-  //           return (
-  //             <View key={index}>
-  //               <Text className="text-red-800 font-semibold text-3xl">
-  //                 {subs[index]}
-  //               </Text>
-  //               {item.map((data, index) => {
-  //                 return (
-  //                   <View
-  //                     key={data.week}
-  //                     className="mx-4 py-2 px-2 my-2 bg-primary rounded-xl"
-  //                   >
-  //                     <Text className="text-blue-800 font-semibold text-lg self-center">
-  //                       {data.week}
-  //                     </Text>
-  //                     {data.data.map((lmn, index) => {
-  //                       return (
-  //                         <View
-  //                           tw="px-2 my-1 rounded-md bg-secondary"
-  //                           key={-index}
-  //                         >
-  //                           <Text className="text-black/60 p-2  text-xl self-center">
-  //                             Elements {index + 1}
-  //                           </Text>
-  //                         </View>
-  //                       );
-  //                     })}
-  //                   </View>
-  //                 );
-  //               })}
-  //             </View>
-  //           );
-  //         })}
-  //       </ScrollView>
-  //     )}
-  //   </View>
-  // );
 
   return (
     <View>
-      <ScrollView
+      {/* <ScrollView
         style={{ backgroundColor: Colors.background }}
         horizontal
         snapToAlignment="center"
@@ -156,9 +140,86 @@ const HomeScreen2 = ({ navigation }) => {
               </View>
             );
           })}
-      </ScrollView>
-      <TabBar />
-      <StatusBar nav={nav} />
+      </ScrollView> */}
+      <FlatList
+        style={{ backgroundColor: Colors.background }}
+        horizontal
+        scrollEnabled={false}
+        snapToAlignment="center"
+        snapToInterval={DevDim.width}
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        ref={listref}
+        data={data && data}
+        renderItem={({ item, index }) => {
+          return (
+            <View
+              key={index}
+              style={styles.flatlist}
+              className="justify-start items-center"
+            >
+              <View style={styles.text}>
+                <Text
+                  className="text-3xl font-semibold text-primary"
+                  onPress={checkChoices}
+                >
+                  {subs[index]}
+                </Text>
+                <Icons
+                  name="settings-outline"
+                  size={30}
+                  color={Colors.primary}
+                />
+              </View>
+
+              <ScrollView
+                style={{ width: DevDim.width }}
+                contentContainerStyle={{ paddingBottom: 75 }}
+                showsVerticalScrollIndicator={false}
+                scrollEventThrottle={0}
+              >
+                {item.map((week, index) => {
+                  return (
+                    <View
+                      key={week.week}
+                      // className="px-4 py-2 bg-secondary m-3 rounded-2xl"
+                      style={styles.weekContainer}
+                    >
+                      <Text className="text-black/60 my-2 text-2xl font-bold">
+                        {week.week}
+                      </Text>
+                      <View className="px-3">
+                        {week.data.map((elements, index) => {
+                          return (
+                            <TouchableOpacity
+                              onPress={() => navigateToMain(elements)}
+                              activeOpacity={0.7}
+                              key={index * 20}
+                              className="bg-background/75 rounded-xl my-2 w-full self-center px-2 justify-between items-center flex-row"
+                              style={{ borderWidth: 2, borderColor: "black" }}
+                            >
+                              <Text className="text-lg py-2 px-2 font-semibold text-black/70 italic">
+                                Element {index + 1}
+                              </Text>
+                              <Icons
+                                name="arrow-forward-outline"
+                                size={30}
+                                color={"rgba(0, 0, 0, 0.7)"}
+                              />
+                            </TouchableOpacity>
+                          );
+                        })}
+                      </View>
+                    </View>
+                  );
+                })}
+              </ScrollView>
+            </View>
+          );
+        }}
+      />
+      <TabBar nav={nav} />
+      <StatusBar />
     </View>
   );
 };
@@ -173,14 +234,14 @@ const styles = StyleSheet.create({
     paddingTop: SB.currentHeight,
   },
   text: {
-    fontSize: 30,
-    fontWeight: "800",
-    color: Colors.primary,
     borderBottomColor: Colors.accent,
     borderBottomWidth: 2,
     width: "100%",
-    paddingStart: 20,
+    paddingHorizontal: 20,
     paddingVertical: 10,
+    justifyContent: "space-between",
+    alignItems: "center",
+    flexDirection: "row",
   },
   scrollView: {
     paddingLeft: 20,
@@ -205,3 +266,28 @@ const styles = StyleSheet.create({
     borderWidth: 3,
   },
 });
+
+// SAVE FOR LATER
+// const [scrollOffset, setScrollOffset] = React.useState(0);
+
+//   const handleScroll = (event) => {
+//     const currentOffset = event.nativeEvent.contentOffset.y;
+
+//     if (currentOffset > 0 && currentOffset > scrollOffset) {
+//       Animated.timing(TabBarRef, {
+//         duration: 2000,
+//         toValue: 100,
+//         useNativeDriver: false,
+//       }).start();
+//       setScrollDirection("down");
+//     } else if (currentOffset < scrollOffset) {
+//       Animated.timing(TabBarRef, {
+//         duration: 2000,
+//         toValue: 0,
+//         useNativeDriver: false,
+//       }).start();
+//       setScrollDirection("up");
+//     }
+
+//     setScrollOffset(currentOffset);
+//   };
