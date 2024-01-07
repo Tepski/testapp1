@@ -24,8 +24,6 @@ const App = () => {
           component={MainScreen2}
           options={{
             animation: "slide_from_right",
-            headerShown: true,
-            headerTitle: false,
           }}
         />
         <Stack.Screen

@@ -2,13 +2,18 @@ import { StyleSheet, Text, View, Animated } from "react-native";
 import { useRef, useState, useEffect } from "react";
 import Colors from "./Color";
 
+const subs = ["MESL", "PIPE", "MDSP"];
+
 const TabBar = ({ nav }) => {
   const meslRef = useRef(new Animated.Value(0)).current;
   const pipeRef = useRef(new Animated.Value(0)).current;
   const mdspRef = useRef(new Animated.Value(0)).current;
-  const selectorRef = useRef(new Animated.Value(46)).current;
+  const selectorRef = useRef(new Animated.Value(51)).current;
+
+  const [selected, setSelected] = useState(0);
 
   const handleClick = (index, toValue) => {
+    setSelected(index);
     nav(index);
     Animated.spring(selectorRef, {
       toValue: toValue,
@@ -20,9 +25,33 @@ const TabBar = ({ nav }) => {
 
   return (
     <Animated.View style={styles.container}>
-      <Text onPress={() => handleClick(0, 46, meslRef)}>MESL</Text>
-      <Text onPress={() => handleClick(1, 172, pipeRef)}>PIPE</Text>
-      <Text onPress={() => handleClick(2, 296, mdspRef)}>MDSP</Text>
+      <Text
+        style={[
+          styles.text,
+          { color: selected == 0 ? Colors.accent : "rgba(255, 255, 255, 0.7)" },
+        ]}
+        onPress={() => handleClick(0, 51, meslRef)}
+      >
+        MESL
+      </Text>
+      <Text
+        style={[
+          styles.text,
+          { color: selected == 1 ? Colors.accent : "rgba(255, 255, 255, 0.7)" },
+        ]}
+        onPress={() => handleClick(1, 192, pipeRef)}
+      >
+        PIPE
+      </Text>
+      <Text
+        style={[
+          styles.text,
+          { color: selected == 2 ? Colors.accent : "rgba(255, 255, 255, 0.7)" },
+        ]}
+        onPress={() => handleClick(2, 333, mdspRef)}
+      >
+        MDSP
+      </Text>
       <Animated.View style={[styles.selector, { left: selectorRef }]} />
     </Animated.View>
   );
@@ -35,16 +64,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     alignItems: "center",
     position: "absolute",
-    bottom: 10,
+    bottom: 0,
     height: 65,
-    width: "90%",
+    width: "100%",
     alignSelf: "center",
-    backgroundColor: Colors.background,
     borderWidth: 2,
-    borderColor: Colors.accent,
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
     flexDirection: "row",
-    borderRadius: 100,
-    elevation: 5,
   },
   text: {
     fontSize: 18,

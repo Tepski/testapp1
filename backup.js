@@ -210,10 +210,7 @@ const HomeScreen2 = ({ navigation }) => {
           >
             <Icons name="settings-outline" size={30} color={Colors.secondary} />
           </TouchableOpacity>
-          <Text
-            className="text-secondary font-semibold italic text-xl"
-            onPress={checkChoices}
-          >
+          <Text className="text-secondary font-semibold italic text-xl">
             ELEMENTS
           </Text>
         </View>

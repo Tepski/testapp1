@@ -8,6 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import Icons from "react-native-vector-icons/Ionicons";
+import Colors from "../MainContainer/Color";
 
 const colors = {
   text: "#082b2b",
@@ -19,7 +20,6 @@ const colors = {
 
 const ScoreModal = ({
   showModal,
-  closeModal,
   refresh,
   data,
   setShowModal,
@@ -45,8 +45,9 @@ const ScoreModal = ({
           style={{
             width: 350,
             paddingVertical: 40,
+            backgroundColor: "rgba(0, 0, 0, 0.8)",
           }}
-          className=" bg-background justify-center items-center rounded-xl"
+          className="justify-center items-center"
         >
           {reviewAns ? (
             <View className="justify-center items-center">
@@ -55,7 +56,7 @@ const ScoreModal = ({
                 className="text-primary"
                 onPress={() => console.log(review[1].data.Choices[0])}
               >
-                {data.correct > Math.floor(data.limit / 2)
+                {data.correct > Math.floor(data.items / 2)
                   ? "CONGRATS!"
                   : "EEWWW! "}
               </Text>
@@ -68,7 +69,7 @@ const ScoreModal = ({
                   style={styles.score}
                   className={`${data.correct > 99 ? "text-4xl" : "text-5xl"}`}
                 >
-                  {data.correct}/{data.limit}
+                  {data.correct}/{data.items}
                 </Text>
               </View>
             </View>
@@ -77,15 +78,15 @@ const ScoreModal = ({
               {review.map((item, index) => {
                 return (
                   <View key={item.data.ID} tw="py-2">
-                    <Text tw="pb-2 font-semibold">
+                    <Text tw="pb-2 font-semibold text-white/70">
                       {index + 1}. {item.data.Question}
                     </Text>
                     {item.data.Choices.map((choices, index) => {
                       return (
                         <View key={index}>
                           <Text
-                            tw={`px-2 ${
-                              item.answer == choices.Label &&
+                            tw={`px-2 text-white/70 ${
+                              item.answer == choices.Text &&
                               `${
                                 item.answer == item.data.Answer
                                   ? "text-green-500"
@@ -93,12 +94,14 @@ const ScoreModal = ({
                               } font-semibold`
                             } `}
                           >
-                            {choices.Label}: {choices.String}
+                            {choices.Text}: {choices.Label}
                           </Text>
                         </View>
                       );
                     })}
-                    <Text tw="px-2 pt-2">ANSWER: {item.data.Answer}</Text>
+                    <Text tw="px-2 pt-2 text-white/70">
+                      ANSWER: {item.data.Answer}
+                    </Text>
                   </View>
                 );
               })}
@@ -106,18 +109,18 @@ const ScoreModal = ({
           )}
           <View className=" w-full flex-row px-12 justify-between">
             <TouchableOpacity onPress={() => retry()}>
-              <Icons name="refresh-outline" size={60} color={colors.accent} />
+              <Icons name="refresh-outline" size={60} color={Colors.primary} />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => home()}>
               <Icons
                 name="arrow-forward-outline"
                 size={60}
-                color={colors.accent}
+                color={Colors.primary}
               />
             </TouchableOpacity>
           </View>
           <Text
-            className="text-sm text-primary"
+            className="text-sm text-white/70"
             onPress={() => setReviewAns(!reviewAns)}
           >
             {reviewAns ? "Review Answers" : "Show Score"}
@@ -133,7 +136,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.7)",
+    backgroundColor: "rgba(255,255,255,0.1)",
   },
   text: {
     fontSize: 50,
@@ -145,7 +148,7 @@ const styles = StyleSheet.create({
   },
   score: {
     fontWeight: "900",
-    color: "yellow",
+    color: Colors.accent,
   },
 });
 

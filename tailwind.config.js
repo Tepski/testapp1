@@ -1,6 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./App.{js,jsx,ts,tsx}", "./Screens/**/*.{js,jsx,ts,tsx}"],
+  content: [
+    "./App.{js,jsx,ts,tsx}",
+    "./Screens/**/*.{js,jsx,ts,tsx}",
+    "./Components/**/*.{js,jsx,ts,tsx}",
+  ],
   theme: {
     extend: {
       colors: {
@@ -9,11 +13,11 @@ module.exports = {
         // primary: "#e46767",
         // secondary: "#f4f4c2",
         // accent: "#c72323",
-        text: "#121410",
-        background: "#fafbf9",
-        primary: "#889a74",
-        secondary: "#bdc8af",
-        accent: "#9db186",
+        text: "#e9e7e9",
+        background: "#0f0b10",
+        primary: "#c3a1cb",
+        secondary: "#6e337c",
+        accent: "#ac43c7",
       },
     },
   },
