@@ -44,6 +44,8 @@ const HomeScreen2 = ({ navigation }) => {
     hardMode: false,
   });
 
+  const [a, b, c, d] = [1, 2, 3, 4];
+
   const setDataToStorage = async (item) => {
     const dataToBeStored = JSON.stringify(item);
     await AsyncStorage.setItem("Data", dataToBeStored);
