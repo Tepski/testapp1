@@ -24,7 +24,7 @@ import imageSelector from "../MainContainer/BGselector";
 import Slider from "@react-native-community/slider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const DevDim = Dimensions.get("screen");
+const DevDim = Dimensions.get("window");
 
 LogBox.ignoreLogs([
   "Non-serializable values were found in the navigation state.",
@@ -64,6 +64,11 @@ const HomeScreen2 = ({ navigation }) => {
     } else {
       getDocuments();
     }
+  };
+
+  const refreshPage = () => {
+    getDocuments();
+    console.log("aoisjd");
   };
 
   const getSettingsStored = async () => {
@@ -193,13 +198,13 @@ const HomeScreen2 = ({ navigation }) => {
   }, [showModal]);
 
   return (
-    <View className="h-full w-full">
+    <View style={styles.container}>
       <View className="absolute">
         <Image
           source={require("../MainContainer/Backgrounds/12.png")}
           style={{
             resizeMode: "stretch",
-            height: DevDim.height,
+            height: DevDim.height + 50,
             width: DevDim.width,
           }}
         />
@@ -214,7 +219,7 @@ const HomeScreen2 = ({ navigation }) => {
           </TouchableOpacity>
           <Text
             className="text-secondary font-semibold italic text-xl"
-            onPress={checkChoices}
+            onPress={refreshPage}
           >
             ELEMENTS
           </Text>
@@ -337,7 +342,9 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: "center",
     alignItems: "center",
-    flex: 1,
+    height: "100%",
+    width: "100%",
+    marginBottom: 0,
   },
   text: {
     backgroundColor: "rgba(0, 0, 0, 0.5)",

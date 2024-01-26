@@ -4,6 +4,7 @@ import {
   View,
   TouchableOpacity,
   StatusBar,
+  Dimensions,
   ScrollView,
 } from "react-native";
 import React from "react";
@@ -12,7 +13,8 @@ import Response from "../MainContainer/Response";
 import ScoreModal from "./ScoreModal";
 import Icons from "react-native-vector-icons/Entypo";
 import { reportQues } from "../Functions/ReportQues";
-import { TextInput } from "react-native-gesture-handler";
+
+const devDim = Dimensions.get("window");
 
 const MainScreen2 = ({ navigation, route }) => {
   const data = route.params;
@@ -28,7 +30,6 @@ const MainScreen2 = ({ navigation, route }) => {
   const [correct, setCorrect] = React.useState(0);
   const [review, setReview] = React.useState([]);
   const [showModal, setShowModal] = React.useState(false);
-  const [numberSelect, setNumberSelect] = React.useState();
 
   const reset = () => {
     setAnswered({
@@ -65,6 +66,14 @@ const MainScreen2 = ({ navigation, route }) => {
           ]
         );
     }
+    scrollRef.current.scrollToEnd({ animated: true });
+  };
+
+  const checkChoices = () => {
+    for (i in quiz) {
+      quiz[i].Answer !== "C" && console.log(quiz[i].ID);
+    }
+    console.log("3 GUARD");
   };
 
   const handleNext = () => {
@@ -84,6 +93,8 @@ const MainScreen2 = ({ navigation, route }) => {
     setCurrentQues(quiz[currentIndex]);
   }, [quiz]);
 
+  const scrollRef = React.useRef(null);
+
   React.useEffect(() => {
     setCurrentQues(quiz[currentIndex]);
   }, [currentIndex]);
@@ -91,12 +102,13 @@ const MainScreen2 = ({ navigation, route }) => {
   return (
     <View style={styles.container} className="bg-background">
       <View className="absolute">{data.imageSource}</View>
-      <Text className="absolute bottom-4 right-6 text-white/70">@tepski</Text>
+      <Text className="absolute bottom-0 right-6 text-white/70">@tepski</Text>
       <View style={styles.header}>
         <Text
           className="px-5 py-2 text-base  text-white/70"
           style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
-          // onPress={() => setCurrentIndex(currentIndex + 1)}
+          onPress={() => setCurrentIndex(56)}
+          // onPress={checkChoices}
         >
           {data.sub} ELEMENTS
         </Text>
@@ -107,8 +119,10 @@ const MainScreen2 = ({ navigation, route }) => {
         </View>
       </View>
       <ScrollView
+        ref={scrollRef}
         className="w-full h-full"
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 50 }}
       >
         <View style={styles.quesContainer}>
           <View className="flex-row w-full justify-between">
@@ -185,7 +199,6 @@ const MainScreen2 = ({ navigation, route }) => {
                 alignSelf: "center",
                 backgroundColor: "rgba(0, 0, 0, 0.65)",
                 borderColor: "rgba(255, 255, 255, 0.7)",
-                // borderRadius: 15,
                 borderWidth: 2,
               }}
             >
@@ -211,7 +224,7 @@ const MainScreen2 = ({ navigation, route }) => {
         <TextInput onChangeText={(e) => setNumberSelect(e)} />
       </View> */}
       <TouchableOpacity
-        className="absolute left-6 bottom-2 items-center"
+        className="absolute left-6 bottom-0 items-center"
         onPress={() =>
           reportQues(data.sub, data.week, data.element, currentQues.ID)
         }
@@ -241,8 +254,8 @@ export default MainScreen2;
 
 const styles = StyleSheet.create({
   container: {
-    height: "100%",
-    width: "100%",
+    height: devDim.height,
+    width: devDim.width,
     alignItems: "center",
     justifyContent: "flex-start",
     paddingTop: 10,
@@ -263,7 +276,6 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   label: {
-    width: "100%",
     position: "absolute",
     justifyContent: "center",
     alignItems: "center",
@@ -273,6 +285,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     left: -27,
     borderWidth: 4,
+    //27
   },
   choices: {
     alignSelf: "flex-end",
@@ -283,6 +296,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     elevation: 20,
     shadowColor: "white",
+    marginHorizontal: -6,
   },
   choiceText: {
     backgroundColor: "rgba(0, 0, 0, 0.5)",

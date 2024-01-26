@@ -1,6 +1,7 @@
+import "react-native-gesture-handler";
 import * as react from "react";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
@@ -11,6 +12,14 @@ import HomeScreen from "./Screens/HomeScreen";
 import AdminScreen from "./Screens/AdminScreen";
 import HomeScreen2 from "./Screens/HomeScreen2";
 import MainScreen2 from "./Screens/MainScreen2";
+
+const TestScreen = () => {
+  return (
+    <View>
+      <Text>TEST SCREEN</Text>
+    </View>
+  );
+};
 
 const App = () => {
   return (

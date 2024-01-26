@@ -1,59 +1,86 @@
-import { StyleSheet, Text, View, Animated } from "react-native";
-import { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
+import { StyleSheet, Text, View, Animated, Dimensions } from "react-native";
 import Colors from "./Color";
 
-const subs = ["MESL", "PIPE", "MDSP"];
+const DevDim = Dimensions.get("window");
 
 const TabBar = ({ nav }) => {
-  const meslRef = useRef(new Animated.Value(0)).current;
-  const pipeRef = useRef(new Animated.Value(0)).current;
-  const mdspRef = useRef(new Animated.Value(0)).current;
-  const selectorRef = useRef(new Animated.Value(51)).current;
+  const textRefs = [useRef(), useRef(), useRef()];
+  const selectorRef = useRef(new Animated.Value(0)).current;
 
   const [selected, setSelected] = useState(0);
+  const [rendered, setRendered] = useState(false);
 
-  const handleClick = (index, toValue) => {
+  const handleMeasure = (index) => {
+    textRefs[index].current.measure((x, y, width, height, pageX) => {
+      console.log(pageX);
+      Animated.spring(selectorRef, {
+        toValue: pageX,
+        tension: 10,
+        friction: 5,
+        useNativeDriver: false,
+      }).start();
+    });
+  };
+
+  // useEffect(() => {
+  //   textRefs[0].current.measure((x, y, width, height, pageX) => {
+  //     const initialSelectorPosition = pageX ? pageX : 31;
+  //     Animated.spring(selectorRef, {
+  //       toValue: initialSelectorPosition,
+  //       tension: 10,
+  //       friction: 5,
+  //       useNativeDriver: false,
+  //     }).start();
+  //   });
+  // }, []);
+
+  const handleClick = (index) => {
     setSelected(index);
     nav(index);
-    Animated.spring(selectorRef, {
-      toValue: toValue,
-      tension: 10,
-      friction: 5,
-      useNativeDriver: false,
-    }).start();
+    handleMeasure(index);
   };
 
   return (
-    <Animated.View style={styles.container}>
+    <View style={styles.container}>
       <Text
+        ref={textRefs[0]}
         style={[
           styles.text,
-          { color: selected == 0 ? Colors.accent : "rgba(255, 255, 255, 0.7)" },
+          {
+            color: selected === 0 ? Colors.accent : "rgba(255, 255, 255, 0.7)",
+          },
         ]}
-        onPress={() => handleClick(0, 51, meslRef)}
+        onPress={() => handleClick(0)}
       >
         MESL
       </Text>
       <Text
+        ref={textRefs[1]}
         style={[
           styles.text,
-          { color: selected == 1 ? Colors.accent : "rgba(255, 255, 255, 0.7)" },
+          {
+            color: selected === 1 ? Colors.accent : "rgba(255, 255, 255, 0.7)",
+          },
         ]}
-        onPress={() => handleClick(1, 192, pipeRef)}
+        onPress={() => handleClick(1)}
       >
         PIPE
       </Text>
       <Text
+        ref={textRefs[2]}
         style={[
           styles.text,
-          { color: selected == 2 ? Colors.accent : "rgba(255, 255, 255, 0.7)" },
+          {
+            color: selected === 2 ? Colors.accent : "rgba(255, 255, 255, 0.7)",
+          },
         ]}
-        onPress={() => handleClick(2, 333, mdspRef)}
+        onPress={() => handleClick(2)}
       >
         MDSP
       </Text>
       <Animated.View style={[styles.selector, { left: selectorRef }]} />
-    </Animated.View>
+    </View>
   );
 };
 
@@ -65,7 +92,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     position: "absolute",
     bottom: 0,
-    height: 65,
+    height: "8%",
     width: "100%",
     alignSelf: "center",
     borderWidth: 2,
@@ -84,7 +111,3 @@ const styles = StyleSheet.create({
     borderRadius: 100,
   },
 });
-
-// 1st left: 44
-// 2nd left: 170
-//3rd left: 296
